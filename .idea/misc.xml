@@ -3,13 +3,15 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="app/src/main/res/layout/activity_main.xml" value="0.12537993920972645" />
-        <entry key="app/src/main/res/layout/fragment_run.xml" value="0.18342391304347827" />
-        <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.18359020852221214" />
-        <entry key="app/src/main/res/layout/fragment_setup.xml" value="0.18359020852221214" />
-        <entry key="app/src/main/res/layout/fragment_statistics.xml" value="0.2824996948242188" />
-        <entry key="app/src/main/res/layout/fragment_tracking.xml" value="0.18359020852221214" />
+        <entry key="app/src/main/res/drawable/bottom_nav_selector.xml" value="0.1605" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="app/src/main/res/layout/fragment_run.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_setup.xml" value="0.5" />
+        <entry key="app/src/main/res/layout/fragment_statistics.xml" value="0.67" />
+        <entry key="app/src/main/res/layout/fragment_tracking.xml" value="0.5" />
         <entry key="app/src/main/res/layout/some_fragment.xml" value="0.1203125" />
+        <entry key="app/src/main/res/menu/bottom_nav_menu.xml" value="0.5" />
       </map>
     </option>
   </component>
