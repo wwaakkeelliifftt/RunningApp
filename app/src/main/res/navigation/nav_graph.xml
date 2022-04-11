@@ -4,6 +4,16 @@
     android:id="@+id/nav_graph.xml"
     app:startDestination="@id/setupFragment">
 
+    <action
+        android:id="@+id/action_global_tracking_fragment"
+        app:destination="@id/trackingFragment"
+        app:launchSingleTop="true" />
+    <!--
+    launchSingleTop == true -> block launch new instance of our activity with reinitialize of state
+     and drop off current data
+    -->
+
+
     <fragment
         android:id="@+id/runFragment"
         android:name="com.example.runningapp.ui.fragments.RunFragment"
