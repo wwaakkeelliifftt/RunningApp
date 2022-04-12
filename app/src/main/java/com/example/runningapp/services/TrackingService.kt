@@ -45,7 +45,6 @@ class TrackingService: LifecycleService() {
 
         initialValues()
         /** original constructor has description "use for test or private scopes"..  */
-//        fusedLocationProviderClient = FusedLocationProviderClient(this)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
         isTracking.observe(this, Observer {
             updateLocationTracking(isTracking = it)
@@ -61,11 +60,12 @@ class TrackingService: LifecycleService() {
                         isFirstRun = false
                         Timber.d("Starting service")
                     } else {
+                        startForegroundService()
                         Timber.d("Resuming service..")
                     }
-
                 }
                 Constants.ACTION_PAUSE_SERVICE -> {
+                    pauseService()
                     Timber.d("Paused service")
                 }
                 Constants.ACTION_STOP_SERVICE -> {
@@ -149,6 +149,8 @@ class TrackingService: LifecycleService() {
 
         startForeground(Constants.NOTIFICATION_ID, notification)
     }
+
+    private fun pauseService() = isTracking.postValue(false)
 
     private fun getMainActivityPendingIntent(): PendingIntent {
         val intent = Intent(this, MainActivity::class.java).also {

@@ -7,11 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import com.example.runningapp.databinding.FragmentTrackingBinding
+import com.example.runningapp.services.Polyline
+import com.example.runningapp.services.Polylines
 import com.example.runningapp.services.TrackingService
 import com.example.runningapp.ui.viewModels.MainViewModel
 import com.example.runningapp.util.Constants
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.PolylineOptions
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -19,6 +24,9 @@ class TrackingFragment: Fragment() {
 
     private val viewModel: MainViewModel by viewModels()
     private var map: GoogleMap? = null
+
+    private var isTracking = false
+    private var pathPoints = mutableListOf<Polyline>()
 
     private var _binding: FragmentTrackingBinding? = null
     private val binding get() = _binding!!
@@ -39,16 +47,87 @@ class TrackingFragment: Fragment() {
             onCreate(savedInstanceState)
             getMapAsync {
                 map = it
+
+                /** called once for case with rotate device and recreate fragment */
+                addAllPolylines()
             }
         }
         binding.btnToggleRun.setOnClickListener {
-            sendCommandToService(Constants.ACTION_START_OR_RESUME_SERVICE)
+            toggleRun()
         }
-        binding.btnToggleRun.setOnLongClickListener {
+        binding.btnFinishRun.setOnClickListener {
             sendCommandToService(Constants.ACTION_STOP_SERVICE)
-            true
+        }
+
+        /** observe livedata state from service in fragment */
+        subscribeToObservers()
+    }
+
+    private fun addLatestPolyline() {
+        if (pathPoints.isNotEmpty() && pathPoints.last().size > 1) {
+            val preLastLatLng = pathPoints.last()[pathPoints.last().size - 2]
+            val lastLatLng = pathPoints.last().last()
+            val polylineOptions = PolylineOptions()
+                .color(Constants.POLYLINE_COLOR)
+                .width(Constants.POLYLINE_WIDTH)
+                .add(preLastLatLng)
+                .add(lastLatLng)
+            map?.addPolyline(polylineOptions)
         }
     }
+
+    private fun addAllPolylines() {
+        for (polyline in pathPoints) {
+            val polylineOptions = PolylineOptions()
+                .color(Constants.POLYLINE_COLOR)
+                .width(Constants.POLYLINE_WIDTH)
+                .addAll(polyline)
+            map?.addPolyline(polylineOptions)
+        }
+    }
+
+    private fun moveCameraToUser() {
+        if (pathPoints.isNotEmpty() && pathPoints.last().isNotEmpty()) {
+            map?.animateCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    pathPoints.last().last(),
+                    Constants.MAP_ZOOM
+                )
+            )
+        }
+    }
+
+    private fun updateTracking(isTracking: Boolean) {
+        this.isTracking = isTracking
+        if (!isTracking) {
+            binding.btnToggleRun.text = "Start"
+            binding.btnFinishRun.visibility = View.VISIBLE
+        } else {
+            binding.btnToggleRun.text = "Stop"
+            binding.btnFinishRun.visibility = View.GONE
+        }
+    }
+
+    private fun toggleRun() {
+        if (isTracking) {
+            sendCommandToService(Constants.ACTION_PAUSE_SERVICE)
+        } else {
+            sendCommandToService(Constants.ACTION_START_OR_RESUME_SERVICE)
+        }
+    }
+
+    private fun subscribeToObservers() {
+        TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
+            updateTracking(it)
+        })
+
+        TrackingService.pathPoints.observe(viewLifecycleOwner, Observer {
+            pathPoints = it
+            addLatestPolyline()
+            moveCameraToUser()
+        })
+    }
+
 
     private fun sendCommandToService(action: String): Intent {
         return Intent(requireContext(), TrackingService::class.java).also { service ->
