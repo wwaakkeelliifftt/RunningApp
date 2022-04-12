@@ -16,7 +16,7 @@ object Constants {
     // attention!! -> "0" doesn't work as parameter for NOTIFICATION_ID and app will crash
     const val NOTIFICATION_ID = 1
 
-
-
+    const val LOCATION_UPDATE_INTERVAL = 5000L
+    const val FASTEST_LOCATION_INTERVAL = 2000L
 
 }
