@@ -10,10 +10,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.example.runningapp.databinding.FragmentTrackingBinding
 import com.example.runningapp.services.Polyline
-import com.example.runningapp.services.Polylines
 import com.example.runningapp.services.TrackingService
 import com.example.runningapp.ui.viewModels.MainViewModel
 import com.example.runningapp.util.Constants
+import com.example.runningapp.util.TrackingUtility
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.PolylineOptions
@@ -27,6 +27,9 @@ class TrackingFragment: Fragment() {
 
     private var isTracking = false
     private var pathPoints = mutableListOf<Polyline>()
+
+    private var currentTimeInMillis = 0L
+    private var timeWithMillis = true
 
     private var _binding: FragmentTrackingBinding? = null
     private val binding get() = _binding!!
@@ -52,11 +55,16 @@ class TrackingFragment: Fragment() {
                 addAllPolylines()
             }
         }
+        timeWithMillis = savedInstanceState?.getBoolean(Constants.SHOW_MILLIS_STATE) ?: true
+
         binding.btnToggleRun.setOnClickListener {
             toggleRun()
         }
         binding.btnFinishRun.setOnClickListener {
             sendCommandToService(Constants.ACTION_STOP_SERVICE)
+        }
+        binding.chbMillis.setOnClickListener {
+            timeWithMillis = !timeWithMillis
         }
 
         /** observe livedata state from service in fragment */
@@ -72,6 +80,7 @@ class TrackingFragment: Fragment() {
                 .width(Constants.POLYLINE_WIDTH)
                 .add(preLastLatLng)
                 .add(lastLatLng)
+
             map?.addPolyline(polylineOptions)
         }
     }
@@ -120,11 +129,15 @@ class TrackingFragment: Fragment() {
         TrackingService.isTracking.observe(viewLifecycleOwner, Observer {
             updateTracking(it)
         })
-
         TrackingService.pathPoints.observe(viewLifecycleOwner, Observer {
             pathPoints = it
             addLatestPolyline()
             moveCameraToUser()
+        })
+        TrackingService.timeRunInMillis.observe(viewLifecycleOwner, Observer {
+            currentTimeInMillis = it
+            val formattedTime = TrackingUtility.getFormattedStopWatchTime(currentTimeInMillis, timeWithMillis)
+            binding.tvTimer.text = formattedTime
         })
     }
 
@@ -175,6 +188,7 @@ class TrackingFragment: Fragment() {
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         binding.mapView.onSaveInstanceState(outState)
+        outState.putBoolean(Constants.SHOW_MILLIS_STATE, timeWithMillis)
     }
 
 }
