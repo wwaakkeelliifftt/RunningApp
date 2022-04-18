@@ -28,5 +28,10 @@ object Constants {
     const val POLYLINE_WIDTH = 8f
     const val MAP_ZOOM = 15f
 
+    const val SORTED_BY_DATE = "timestamp"
+    const val SORTED_BY_SPEED = "speed"
+    const val SORTED_BY_CALORIES = "calories"
+    const val SORTED_BY_TIME_IN_MILLIS = "mills"
+    const val SORTED_BY_DISTANCE = "distance"
 
 }

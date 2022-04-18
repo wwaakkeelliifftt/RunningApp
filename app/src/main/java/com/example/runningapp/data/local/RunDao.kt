@@ -25,7 +25,7 @@ interface RunDao {
             CASE WHEN :column = 'distance' THEN distanceInMeter END DESC
             """
     )
-    fun getAllRunsSortedBy(column: String): LiveData<List<Run>>
+    suspend fun getAllRunsSortedBy(column: String): List<Run>
 
     @Query("SELECT SUM(timeInMills) FROM running_table")
     fun getTotalTimeInMills(): LiveData<Long>

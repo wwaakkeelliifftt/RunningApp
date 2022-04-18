@@ -9,7 +9,7 @@ interface MainRepository {
 
     suspend fun deleteRun(run: Run)
 
-    fun getAllRunsSortedBy(column: String): LiveData<List<Run>>
+    suspend fun getAllRunsSortedBy(column: String): List<Run>
 
     fun getTotalTimeInMills(): LiveData<Long>
 
@@ -18,4 +18,5 @@ interface MainRepository {
     fun getTotalDistance(): LiveData<Int>
 
     fun getTotalCalories(): LiveData<Int>
+
 }

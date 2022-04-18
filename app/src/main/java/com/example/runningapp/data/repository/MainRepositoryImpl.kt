@@ -16,8 +16,10 @@ class MainRepositoryImpl @Inject constructor(
     override fun getTotalCalories(): LiveData<Int> = dao.getTotalCalories()
     override fun getTotalTimeInMills(): LiveData<Long> = dao.getTotalTimeInMills()
     override fun getTotalAverageSpeed(): LiveData<Float> = dao.getTotalAverageSpeed()
-    override fun getAllRunsSortedBy(column: String): LiveData<List<Run>> {
+
+    override suspend fun getAllRunsSortedBy(column: String): List<Run> {
         return dao.getAllRunsSortedBy(column = column)
     }
 
 }
+
