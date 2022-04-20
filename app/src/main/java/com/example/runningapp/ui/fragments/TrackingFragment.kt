@@ -28,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.round
 
 @AndroidEntryPoint
@@ -41,8 +42,8 @@ class TrackingFragment: Fragment() {
 
     private var currentTimeInMillis = 0L
     private var timeWithMillis = false
-    /** default value for, later we fix it with actual user input parameters */
-    private var weight = 66f
+    /**  @set: <-- this one for injecting the primitive types. also NO 'private' and 'lateinit' modifier */
+    @set:Inject var weight = 18.2f
 
     private var _binding: FragmentTrackingBinding? = null
     private val binding get() = _binding!!
@@ -151,7 +152,7 @@ class TrackingFragment: Fragment() {
                 (distanceInMeters / 1000f) / (currentTimeInMillis / 1000f / 60 / 60)
                         * 10) / 10f
             val dateStamp = Calendar.getInstance().timeInMillis
-            val caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt()
+            val caloriesBurned = ((distanceInMeters / 1000f) * weight.toFloat()).toInt()
 
             val run = Run(
                 img = btm,
