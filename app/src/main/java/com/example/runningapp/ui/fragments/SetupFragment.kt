@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.NavOptions
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.example.runningapp.R
 import com.example.runningapp.databinding.FragmentSetupBinding
@@ -26,7 +27,8 @@ import javax.inject.Named
 class SetupFragment: Fragment() {
 
     @Inject lateinit var sharedPref: SharedPreferences
-    @set:Inject @Named("provideWeight") var isFirstAppOpen = true
+//    @set:Inject var isFirstAppOpen = true
+    var isFirstAppOpen: Boolean = true
 
     private var _binding: FragmentSetupBinding? = null
     private val binding get() = _binding!!
@@ -39,6 +41,7 @@ class SetupFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        isFirstAppOpen = sharedPref.getBoolean(Constants.KEY_FIRST_TIME_TOGGLE, true)
         if (!isFirstAppOpen) {
             // remove SetupFragment from back-stack
             val navOptions = NavOptions.Builder()
@@ -51,6 +54,9 @@ class SetupFragment: Fragment() {
                 navOptions = navOptions
             )
         }
+
+//        Navigation.findNavController(requireView())
+//            .popBackStack(R.id.settingsFragment, true)
 
         binding.tvContinue.setOnClickListener {
             val success = writePersonalDataToSharedPref()

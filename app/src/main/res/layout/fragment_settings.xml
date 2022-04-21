@@ -62,4 +62,20 @@
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.5" />
 
+    <Button
+        android:id="@+id/btnResetChanges"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Reset User Parameters ??"
+        android:textColor="@color/md_blue_900"
+        android:backgroundTint="@color/colorAccent"
+        android:elevation="10dp"
+        android:scaleX="0.8"
+        android:scaleY="0.8"
+        app:layout_constraintTop_toBottomOf="@id/btnApplyChanges"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.9" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
