@@ -2,6 +2,7 @@ package com.example.runningapp.ui.fragments
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.*
 import androidx.core.view.get
@@ -16,6 +17,7 @@ import com.example.runningapp.databinding.FragmentTrackingBinding
 import com.example.runningapp.services.Polyline
 import com.example.runningapp.services.TrackingService
 import com.example.runningapp.ui.viewModels.MainViewModel
+import com.example.runningapp.ui.viewModels.SortType
 import com.example.runningapp.util.Constants
 import com.example.runningapp.util.TrackingUtility
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -42,8 +44,11 @@ class TrackingFragment: Fragment() {
 
     private var currentTimeInMillis = 0L
     private var timeWithMillis = false
-    /**  @set: <-- this one for injecting the primitive types. also NO 'private' and 'lateinit' modifier */
+    /**  @set: <-- this one for injecting the primitive types. also NO 'private' and 'lateinit' modifier.
+     *  but use this injecting at first for static tokens!
+     *  dynamic values will not update, because still in memory as singletons */
     @set:Inject var weight = 18.2f
+    @Inject lateinit var sharedPref: SharedPreferences
 
     private var _binding: FragmentTrackingBinding? = null
     private val binding get() = _binding!!
@@ -62,6 +67,7 @@ class TrackingFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        weight = sharedPref.getFloat(Constants.KEY_WEIGHT, 99f)
 
         binding.mapView.apply {
             onCreate(savedInstanceState)
@@ -81,7 +87,7 @@ class TrackingFragment: Fragment() {
             zoomToSeeWholeTrack()
             endRunAndSaveToDatabase()
         }
-        binding.chbMillis.setOnClickListener {
+        binding.chbMillis?.setOnClickListener {
             timeWithMillis = !timeWithMillis
         }
 
@@ -152,7 +158,7 @@ class TrackingFragment: Fragment() {
                 (distanceInMeters / 1000f) / (currentTimeInMillis / 1000f / 60 / 60)
                         * 10) / 10f
             val dateStamp = Calendar.getInstance().timeInMillis
-            val caloriesBurned = ((distanceInMeters / 1000f) * weight.toFloat()).toInt()
+            val caloriesBurned = ((distanceInMeters / 1000f) * weight).toInt()
 
             val run = Run(
                 img = btm,
@@ -163,7 +169,10 @@ class TrackingFragment: Fragment() {
                 caloriesBurned = caloriesBurned
             )
             Timber.d("RUN SAVED. id = ${run.id}, avgSpeed = ${run.averageSpeedInKmH}")
+
             viewModel.insertRun(run)
+            viewModel.changeSortType(SortType.Date)
+
             Snackbar.make(
                 requireActivity().findViewById(R.id.rootView),
                 "Run saved successfully",
