@@ -13,8 +13,8 @@
         <entry key="app/src/main/res/layout/fragment_run.xml" value="0.20774078369140625" />
         <entry key="app/src/main/res/layout/fragment_settings.xml" value="0.3863871835434663" />
         <entry key="app/src/main/res/layout/fragment_setup.xml" value="0.1038315417719822" />
-        <entry key="app/src/main/res/layout/fragment_statistics.xml" value="0.23242370605468748" />
-        <entry key="app/src/main/res/layout/fragment_tracking.xml" value="0.17362630979356092" />
+        <entry key="app/src/main/res/layout/fragment_statistics.xml" value="0.27859832763671877" />
+        <entry key="app/src/main/res/layout/fragment_tracking.xml" value="0.1" />
         <entry key="app/src/main/res/layout/item_run.xml" value="0.2231826782226562" />
         <entry key="app/src/main/res/layout/marker_view.xml" value="0.4737945556640626" />
         <entry key="app/src/main/res/layout/some_fragment.xml" value="0.1203125" />
