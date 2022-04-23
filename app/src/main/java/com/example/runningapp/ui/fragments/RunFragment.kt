@@ -1,6 +1,8 @@
 package com.example.runningapp.ui.fragments
 
 import android.Manifest
+import android.animation.ArgbEvaluator
+import android.animation.ValueAnimator
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
@@ -18,6 +20,7 @@ import com.example.runningapp.databinding.FragmentRunBinding
 import com.example.runningapp.ui.adapters.RunAdapter
 import com.example.runningapp.ui.adapters.onItemClick
 import com.example.runningapp.ui.adapters.onLongItemClick
+import com.example.runningapp.ui.adapters.setOnItemClickListener
 import com.example.runningapp.ui.viewModels.MainViewModel
 import com.example.runningapp.ui.viewModels.SortType
 import com.example.runningapp.util.Constants
@@ -84,6 +87,24 @@ class RunFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             }
         })
 
+        onLongItemClick {
+            animateLongCLick(binding.root)
+        }
+
+    }
+
+    private fun animateLongCLick(view: View) {
+        ValueAnimator.ofObject(
+            ArgbEvaluator(),
+            resources.getColor(R.color.colorAccent),
+            resources.getColor(R.color.md_blue_700)
+        ).apply {
+            duration = 1000L
+            addUpdateListener { valueAnimator ->
+                view.setBackgroundColor(valueAnimator.animatedValue as Int)
+            }
+            start()
+        }
     }
 
     @SuppressLint("NewApi")
