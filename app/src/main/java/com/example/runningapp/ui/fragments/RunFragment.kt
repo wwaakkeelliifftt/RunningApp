@@ -12,9 +12,12 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.runningapp.R
 import com.example.runningapp.databinding.FragmentRunBinding
 import com.example.runningapp.ui.adapters.RunAdapter
+import com.example.runningapp.ui.adapters.onItemClick
+import com.example.runningapp.ui.adapters.onLongItemClick
 import com.example.runningapp.ui.viewModels.MainViewModel
 import com.example.runningapp.ui.viewModels.SortType
 import com.example.runningapp.util.Constants
@@ -49,6 +52,7 @@ class RunFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
         viewModel.queryRuns.observe(viewLifecycleOwner) {
             runAdapter.submitList(it)
+            binding.rvRuns.scheduleLayoutAnimation()
         }
 
     }
@@ -63,6 +67,23 @@ class RunFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         runAdapter = RunAdapter()
         adapter = runAdapter
         layoutManager = LinearLayoutManager(requireContext())
+
+        /** hide FAB when scroll down */
+        addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                if (dy < 0 || dy > 0  && binding.fab.isShown) {
+                    binding.fab.hide()
+                }
+            }
+
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    binding.fab.show()
+                }
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+        })
+
     }
 
     @SuppressLint("NewApi")

@@ -56,4 +56,11 @@
 
     </style>
 
+    <!--    rounded corners at imageView into RecyclerView  -->
+    <style name="roundedCornerImageViewStile">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">5%</item>
+    </style>
+
+
 </resources>

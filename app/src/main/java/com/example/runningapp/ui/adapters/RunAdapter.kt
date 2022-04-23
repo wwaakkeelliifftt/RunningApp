@@ -50,7 +50,9 @@ class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
             itemView.apply {
                 Glide.with(this)
                     .load(run.img)
+                    .centerCrop()
                     .into(holder.itemBinding.ivRunImage)
+
             }
             itemBinding.apply {
                 val calendar = Calendar.getInstance().apply {
@@ -71,7 +73,6 @@ class RunAdapter : RecyclerView.Adapter<RunAdapter.RunViewHolder>() {
                 tvCalories.text = caloriesBurned
             }
         }
-
     }
 
 }

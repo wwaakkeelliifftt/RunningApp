@@ -22,6 +22,7 @@ import com.example.runningapp.util.Constants
 import com.example.runningapp.util.TrackingUtility
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -67,7 +68,19 @@ class TrackingFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         weight = sharedPref.getFloat(Constants.KEY_WEIGHT, 99f)
+        /** few string below - case for survive rotate for CancelDialogFragment */
+        if (savedInstanceState != null) {
+            val cancelTrackingDialog =
+                parentFragmentManager.findFragmentByTag(Constants.CANCEL_TRACKING_DIALOG_TAG)
+                    as CancelTrackingDialog? // <-- important cast as @Nullable. because will crash if can't find
+
+            cancelTrackingDialog?.setListener {
+                stopRun()
+            }
+        }
+
 
         binding.mapView.apply {
             onCreate(savedInstanceState)
@@ -137,6 +150,14 @@ class TrackingFragment: Fragment() {
                 bounds.include(position)
             }
         }
+
+        /** case when gps is turn off and we have pathPoints with 1 empty mutableList inside for start  */
+        if (pathPoints.size == 1) {
+            Snackbar.make(requireView(), "No Coordinate in PathPoint. Use default. Hello from Kotlin!", Snackbar.LENGTH_LONG).show()
+            bounds
+                .include(LatLng(60.031765, 29.637169))
+        }
+
         map?.moveCamera(
             CameraUpdateFactory.newLatLngBounds(
                 bounds.build(),
@@ -185,10 +206,10 @@ class TrackingFragment: Fragment() {
 
     private fun updateTracking(isTracking: Boolean) {
         this.isTracking = isTracking
-        if (!isTracking) {
+        if (!isTracking && currentTimeInMillis > 0L) {
             binding.btnToggleRun.text = "Start"
             binding.btnFinishRun.visibility = View.VISIBLE
-        } else {
+        } else if (isTracking) {
             binding.btnToggleRun.text = "Stop"
             binding.btnFinishRun.visibility = View.GONE
             menu?.get(0)?.isVisible = true
@@ -258,21 +279,16 @@ class TrackingFragment: Fragment() {
     }
 
     private fun showCancelTrackingDialog() {
-        val dialog = MaterialAlertDialogBuilder(requireContext(), R.style.AlertDialogTheme)
-            .setTitle("Cancel the run?")
-            .setMessage("Are you sure to cancel the current run and delete all it's data?")
-            .setIcon(R.drawable.ic_delete)
-            .setPositiveButton("Yes") { _, _ ->
+        CancelTrackingDialog().apply {
+            setListener {
                 stopRun()
             }
-            .setNegativeButton("No") { dialogInterface, _ ->
-                dialogInterface.cancel()
-            }
-            .create()
-        dialog.show()
+        }.show(parentFragmentManager, Constants.CANCEL_TRACKING_DIALOG_TAG)
+        /** ^^^ TAG is IMPORTANT!! ^^^ to Survive the rotation with reset var @yesListener = null */
     }
 
     private fun stopRun() {
+        binding.tvTimer.text = "00:00:00:00"
         sendCommandToService(Constants.ACTION_STOP_SERVICE)
         findNavController().navigate(R.id.action_trackingFragment_to_runFragment)
     }

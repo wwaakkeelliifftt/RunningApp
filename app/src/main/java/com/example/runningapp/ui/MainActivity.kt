@@ -29,6 +29,10 @@ class MainActivity : AppCompatActivity() {
 
         val navController = getNavControllerToNavContainer()
         binding.bottomNavigationView.setupWithNavController(navController)
+
+        /** No-Op. Use for old version of androidx.navigation. Already deprecated and works fine without this */
+//        binding.bottomNavigationView.setOnNavigationItemReselectedListener { /* No-Op */ }
+
         navController.addOnDestinationChangedListener { _controller, destination, _args ->
                 when (destination.id) {
                     R.id.settingsFragment,
