@@ -10,9 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.runningapp.R
@@ -52,6 +55,9 @@ class RunFragment: Fragment(), EasyPermissions.PermissionCallbacks {
         setupRecyclerView()
         setupFab()
         setupSpinner()
+        setupSwipeToDeleteCallback().apply {
+            attachToRecyclerView(binding.rvRuns)
+        }
 
         viewModel.queryRuns.observe(viewLifecycleOwner) {
             runAdapter.submitList(it)
@@ -89,6 +95,17 @@ class RunFragment: Fragment(), EasyPermissions.PermissionCallbacks {
 
         onLongItemClick {
             animateLongCLick(binding.root)
+
+            // can't find a way to launch animate on selected viewHolder into recyclerView
+//            val viewHolder = binding.rvRuns.getChildViewHolder(this.getChildAt(it)) as RunAdapter.RunViewHolder
+//            animateLongCLick(viewHolder.itemBinding.root)
+
+//            this.findViewHolderForLayoutPosition(it).also { viewHolder ->
+//                Timber.d(viewHolder.toString())
+//                viewHolder?.let {
+//                    animateLongCLick(view = viewHolder.itemView)
+//                }
+//            }
         }
 
     }
@@ -105,6 +122,24 @@ class RunFragment: Fragment(), EasyPermissions.PermissionCallbacks {
             }
             start()
         }
+    }
+
+    private fun setupSwipeToDeleteCallback(): ItemTouchHelper {
+        val swipeCallback = object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT ) {
+
+            override fun onMove(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder): Boolean {
+                return false
+            }
+
+            @RequiresApi(Build.VERSION_CODES.N)
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+                val position = viewHolder.adapterPosition
+                Toast.makeText(requireContext(), "pos: $position", Toast.LENGTH_SHORT).show()
+                viewModel.deleteRun(position)
+                runAdapter.notifyItemRemoved(position)
+            }
+        }
+        return ItemTouchHelper(swipeCallback)
     }
 
     @SuppressLint("NewApi")

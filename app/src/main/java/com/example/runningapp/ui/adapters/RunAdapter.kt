@@ -1,11 +1,20 @@
 package com.example.runningapp.ui.adapters
 
+import android.content.Context
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.core.view.get
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.runningapp.R
 import com.example.runningapp.data.local.entity.Run
 import com.example.runningapp.databinding.ItemRunBinding
 import com.example.runningapp.util.TrackingUtility

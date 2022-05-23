@@ -3,11 +3,15 @@ package com.example.runningapp.ui.viewModels
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
+import com.example.runningapp.R
 import com.example.runningapp.data.local.entity.Run
 import com.example.runningapp.data.repository.MainRepository
 import com.example.runningapp.util.Constants
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.text.FieldPosition
 import javax.inject.Inject
 
 @RequiresApi(Build.VERSION_CODES.N)
@@ -46,10 +50,14 @@ class MainViewModel @Inject constructor(
         }
     }
 
-    fun deleteRun(run: Run) {
+    fun deleteRun(position: Int) {
         viewModelScope.launch {
-            repository.deleteRun(run)
+            _queryRuns.value?.get(position)?.let { run ->
+                repository.deleteRun(run)
+                Timber.d("Run №${run.id} -- ${run.distanceInMeter}km --> was clear from db")
+            }
         }
+        changeSortType(sortType.value!!)
     }
 
     fun getTotalDistance(): LiveData<Int> = repository.getTotalDistance()
